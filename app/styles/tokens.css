@@ -1,0 +1,188 @@
+/* Hallmark · app design system · theme: custom "Bubble Ink" · genre: playful
+ * vibe: bold modern playful — white/black base, chalky pastel accents, sticker energy
+ * paper oklch(100% 0 0) · ink oklch(13% 0 0) · accent: clay (warm)
+ * fonts: Baloo 2 (display) · Nunito Sans (UI) · Literata (reading — serif-for-language survives)
+ * axes: light-white / rounded-display / warm-clay
+ * Pre-emit critique: P5 H4 E4 S5 R4 V5
+ * Ratified in design-site/ (2026-08-22); see docs/design.md.
+ */
+
+/* ─────────────────────────────────────────────────────────────
+   1 · Primitives — never referenced by components directly.
+   Pastels: wash (fill) · press (text) · pop (decoration ONLY).
+   ───────────────────────────────────────────────────────────── */
+:root {
+  /* white paper & black ink — the off-white surfaces carry a trace of the
+     clay anchor hue: pure-neutral greys read as dead next to warm pastels */
+  --paper: oklch(100% 0 0);
+  --paper-card: oklch(97.5% 0.007 60);
+  --paper-line: oklch(88% 0.008 60);
+  --ink-0: oklch(13% 0 0);
+  --ink-soft: oklch(45% 0 0);
+
+  /* dark "ink" surfaces — near-black */
+  --ink-paper: oklch(16% 0.004 255);
+  --ink-card: oklch(21% 0.004 255);
+  --ink-line: oklch(29% 0.004 255);
+  --ink-text: oklch(94% 0 0);
+  --ink-muted: oklch(70% 0.004 255);
+
+  /* pastels — light */
+  --clay-wash: oklch(90% 0.045 45);
+  --clay-press: oklch(46% 0.09 40);
+  --clay-pop: oklch(72% 0.14 45);
+  --sage-wash: oklch(91% 0.035 150);
+  --sage-press: oklch(43% 0.06 155);
+  --sage-pop: oklch(74% 0.12 150);
+  --dusty-wash: oklch(90% 0.035 245);
+  --dusty-press: oklch(45% 0.07 250);
+  --dusty-pop: oklch(70% 0.11 245);
+  --ochre-wash: oklch(92% 0.05 90);
+  --ochre-press: oklch(50% 0.085 80);
+  --ochre-pop: oklch(80% 0.14 90);
+  --lilac-wash: oklch(90% 0.04 300);
+  --lilac-press: oklch(46% 0.07 300);
+  --lilac-pop: oklch(72% 0.12 300);
+  --rose-wash: oklch(91% 0.04 20);
+  --rose-press: oklch(45% 0.1 25);
+  --rose-pop: oklch(70% 0.14 20);
+
+  /* pastels — dark */
+  --clay-wash-d: oklch(32% 0.035 45);
+  --clay-press-d: oklch(80% 0.07 50);
+  --clay-pop-d: oklch(66% 0.12 45);
+  --sage-wash-d: oklch(31% 0.03 150);
+  --sage-press-d: oklch(80% 0.06 150);
+  --sage-pop-d: oklch(68% 0.1 150);
+  --dusty-wash-d: oklch(31% 0.03 245);
+  --dusty-press-d: oklch(80% 0.055 240);
+  --dusty-pop-d: oklch(64% 0.1 245);
+  --ochre-wash-d: oklch(32% 0.04 90);
+  --ochre-press-d: oklch(82% 0.08 88);
+  --ochre-pop-d: oklch(72% 0.12 90);
+  --lilac-wash-d: oklch(32% 0.035 300);
+  --lilac-press-d: oklch(81% 0.055 300);
+  --lilac-pop-d: oklch(66% 0.1 300);
+  --rose-wash-d: oklch(31% 0.035 20);
+  --rose-press-d: oklch(81% 0.06 22);
+  --rose-pop-d: oklch(64% 0.12 20);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   2 · Theme-invariant scales
+   ───────────────────────────────────────────────────────────── */
+:root {
+  /* 4pt spacing */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  /* type scale */
+  --text-xs: 0.78rem;
+  --text-sm: 0.9rem;
+  --text-base: 1.05rem;
+  --text-md: 1.18rem;
+  --text-lg: 1.5rem;
+  --text-xl: clamp(1.7rem, 1.35rem + 1.6vw, 2.1rem);
+  --text-display: clamp(2.2rem, 1.7rem + 2.4vw, 3.2rem);
+  --text-hero: clamp(2.4rem, 1.9rem + 3vw, 4rem);
+
+  /* fonts — semantic roles over next/font variables */
+  --font-display: var(--font-baloo), "Nunito Sans", system-ui, sans-serif;
+  --font-reading: var(--font-literata), Georgia, "Times New Roman", serif;
+  --font-ui: var(--font-nunito), -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  /* radius — bubbly */
+  --radius-sm: 0.6rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.5rem;
+  --radius-xl: 2rem;
+  --radius-full: 999px;
+
+  /* shadows */
+  --shadow-1: 0 2px 10px oklch(0% 0 0 / 0.07);
+  --shadow-2: 0 8px 28px oklch(0% 0 0 / 0.22);
+
+  /* motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.45, 0.64, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.8, 0.44, 1);
+  --dur-fast: 120ms;
+  --dur-base: 200ms;
+  --dur-slow: 320ms;
+  --dur-slower: 500ms;
+
+  /* borders: bold solid lines on interactive surfaces */
+  --rule: 1px solid var(--line);
+  --rule-bold: 1.5px solid var(--line-bold);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   3 · Semantics — the ONLY names components use.
+   ───────────────────────────────────────────────────────────── */
+:root {
+  color-scheme: light dark;
+
+  --bg: light-dark(var(--paper), var(--ink-paper));
+  --ink: light-dark(var(--ink-0), var(--ink-text));
+  --muted: light-dark(var(--ink-soft), var(--ink-muted));
+  --accent: light-dark(var(--clay-press), var(--clay-press-d));
+  --target-bg: light-dark(var(--clay-wash), var(--clay-wash-d));
+  --target-ink: light-dark(var(--clay-press), var(--clay-press-d));
+  --line: light-dark(var(--paper-line), var(--ink-line));
+  --line-bold: light-dark(oklch(13% 0 0 / 0.16), oklch(94% 0 0 / 0.2));
+  --card-bg: light-dark(var(--paper-card), var(--ink-card));
+  /* controls (fields, selects, toggles) sit on white in light mode and lean on
+     --line-bold for their shape; --card-bg is for content surfaces only */
+  --field-bg: light-dark(var(--paper), var(--ink-card));
+
+  --surface-raised: light-dark(var(--paper-card), var(--ink-card));
+  --on-accent: light-dark(oklch(100% 0 0), oklch(15% 0.004 255));
+  --danger-bg: light-dark(var(--rose-wash), var(--rose-wash-d));
+  --danger-ink: light-dark(var(--rose-press), var(--rose-press-d));
+  --focus-ring: light-dark(var(--clay-press), var(--clay-press-d));
+
+  /* the ink slab: black in light, lifted near-black in dark */
+  --slab-bg: light-dark(var(--ink-0), oklch(27% 0.004 255));
+  --slab-ink: light-dark(var(--paper), var(--ink-text));
+
+  /* functional pastel roles (UI) */
+  --role-clay-bg: light-dark(var(--clay-wash), var(--clay-wash-d));
+  --role-clay-ink: light-dark(var(--clay-press), var(--clay-press-d));
+  --role-sage-bg: light-dark(var(--sage-wash), var(--sage-wash-d));
+  --role-sage-ink: light-dark(var(--sage-press), var(--sage-press-d));
+  --role-dusty-bg: light-dark(var(--dusty-wash), var(--dusty-wash-d));
+  --role-dusty-ink: light-dark(var(--dusty-press), var(--dusty-press-d));
+  --role-ochre-bg: light-dark(var(--ochre-wash), var(--ochre-wash-d));
+  --role-ochre-ink: light-dark(var(--ochre-press), var(--ochre-press-d));
+  --role-lilac-bg: light-dark(var(--lilac-wash), var(--lilac-wash-d));
+  --role-lilac-ink: light-dark(var(--lilac-press), var(--lilac-press-d));
+
+  /* decorative pop roles (shapes, stickers — never body text) */
+  --pop-clay: light-dark(var(--clay-pop), var(--clay-pop-d));
+  --pop-sage: light-dark(var(--sage-pop), var(--sage-pop-d));
+  --pop-dusty: light-dark(var(--dusty-pop), var(--dusty-pop-d));
+  --pop-ochre: light-dark(var(--ochre-pop), var(--ochre-pop-d));
+  --pop-lilac: light-dark(var(--lilac-pop), var(--lilac-pop-d));
+
+  /* FSRS grades: again=clay · hard=ochre · good=dusty · easy=sage */
+  --grade-again: var(--role-clay-ink);
+  --grade-hard: var(--role-ochre-ink);
+  --grade-good: var(--role-dusty-ink);
+  --grade-easy: var(--role-sage-ink);
+}
+
+/* Manual theme override (absent attribute = follow system) */
+[data-theme="paper"] {
+  color-scheme: light;
+}
+
+[data-theme="ink"] {
+  color-scheme: dark;
+}

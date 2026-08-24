@@ -1,0 +1,19 @@
+pylgrim-language
+Copyright 2026 pylgrim
+
+This product includes software developed at pylgrim
+(https://github.com/pylgrim-co/pylgrim-language).
+
+Licensed under the Apache License, Version 2.0. See LICENSE.
+
+---
+
+Two things this licence does NOT cover:
+
+  The story pool and the seed library. These are content, not code, and
+  they are assets of the hosted service governed by its terms of service.
+  They are not part of this distribution and this repository contains no
+  path that reads from them.
+
+  The name. "pylgrim" is protected by trademark independently of the
+  licence. A fork may use the code; it may not use the brand.
