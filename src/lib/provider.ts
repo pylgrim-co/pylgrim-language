@@ -6,7 +6,8 @@ import { languageOf } from "./languages";
  *
  * Two providers, one surface:
  *  - "api"          — Anthropic API SDK, needs ANTHROPIC_API_KEY. The
- *                     production path, and the self-hosted BYO-key path.
+ *                     production path hosted, and the operator's own key
+ *                     self-hosted. One key per deployment, never per user.
  *  - "claude-code"  — Claude Agent SDK, authenticates with the local
  *                     Claude Code subscription login. LOCAL DEVELOPMENT
  *                     ONLY: a subscription is personal auth, not a
@@ -70,14 +71,9 @@ export interface Provider {
   completeJson(params: CompleteJsonParams): Promise<{ json: unknown; usage: { input_tokens: number; output_tokens: number } }>;
 }
 
-export async function getProvider(name: ProviderName = resolveProvider(), opts?: { apiKey?: string }): Promise<Provider> {
+export async function getProvider(name: ProviderName = resolveProvider()): Promise<Provider> {
   // Dynamic imports keep the Agent SDK (which spawns a CLI) out of the
   // bundle entirely when the API path is in use, and vice versa.
-  // A BYO key forces the API provider regardless of the resolved default.
-  if (opts?.apiKey) {
-    const { makeApiProvider } = await import("./providers/api");
-    return makeApiProvider(opts.apiKey);
-  }
   if (name === "claude-code") {
     const { claudeCodeProvider } = await import("./providers/claude-code");
     return claudeCodeProvider;

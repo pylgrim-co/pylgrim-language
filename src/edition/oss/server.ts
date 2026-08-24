@@ -8,7 +8,7 @@
 export { currentSessionUser, currentUserId, requireUserId, unauthorized, LOCAL_USER } from "./identity";
 // No upgradeRequired: there is nothing to upgrade to, and nothing in
 // this edition calls it.
-export { planFor, recordPlanChoice, requirePaid, requestContext, quotaResponse, hasByoKey } from "./entitlement";
+export { planFor, recordPlanChoice, requirePaid, requestContext, quotaResponse } from "./entitlement";
 export { recordGenerationEvent, costUsd } from "./usage";
 export { audioExists, audioUrl, uploadAudio, audioFilePath } from "./audio-store";
 export { FLAGS } from "./flags";

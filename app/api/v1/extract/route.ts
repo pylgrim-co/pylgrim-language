@@ -21,7 +21,7 @@ export const maxDuration = 60;
 export async function POST(req: Request): Promise<Response> {
   const ctx = await requestContext();
   if (!ctx.userId) return unauthorized();
-  const paywall = await requirePaid(ctx.userId, ctx.byoKey);
+  const paywall = await requirePaid(ctx.userId);
   if (paywall) return paywall;
 
   const body = generationInputSchema.pick({ intent: true }).safeParse(await req.json());

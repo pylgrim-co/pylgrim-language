@@ -5,17 +5,15 @@ import { EXTRACT_SYSTEM, extractUserPrompt } from "../../prompts/extract";
 import { generateSystem, generateUserPrompt, GENERATED_STORY_WITH_META_JSON_SCHEMA } from "../../prompts/generate";
 import { EXTRACT_MODEL, generateModelFor, type CompleteJsonParams, type GenerateParams, type GenEvent, type Provider } from "../provider";
 
-/** Anthropic API provider — production and BYO-key path. A per-user key
- * (BYO) produces a per-request instance; default uses ANTHROPIC_API_KEY. */
+/**
+ * Anthropic API provider. The key comes from ANTHROPIC_API_KEY and
+ * nowhere else — hosted, that is pylgrim's key; self-hosted, it is the
+ * operator's. There is no per-request key, because there is no path by
+ * which a user supplies one (decision: no-byo-key-on-the-hosted-product).
+ */
 
-export function makeApiProvider(apiKey?: string): Provider {
-  const client = () => new Anthropic(apiKey ? { apiKey } : undefined);
-  return apiProviderWith(client);
-}
-
-export const apiProvider: Provider = makeApiProvider();
-
-function apiProviderWith(client: () => Anthropic): Provider {
+export const apiProvider: Provider = (() => {
+  const client = () => new Anthropic();
   return {
   name: "api",
 
@@ -91,4 +89,4 @@ function apiProviderWith(client: () => Anthropic): Provider {
     }
   },
   };
-}
+})();

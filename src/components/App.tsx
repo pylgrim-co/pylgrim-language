@@ -51,7 +51,7 @@ export default function App({
 }: {
   initialUser: SessionUser;
   plan: Plan;
-  /** plan === "paid", OR a BYO key is stored (decision: byo-key-unlocks-generation-on-free) */
+  /** whether the AI surfaces are available to this caller */
   canGenerate: boolean;
 }) {
   const [tab, setTab] = useState<Tab>("new");
@@ -88,9 +88,8 @@ export default function App({
   // What they are entitled to, resolved server-side. The UI hides paid
   // surfaces from it; the route boundary is what actually refuses them.
   const free = plan === "free";
-  // AI surfaces gate on this, not on `free` directly: a stored BYO key
-  // unlocks them on the free plan without lifting the card cap or the
-  // account-bar badge, both of which stay keyed to `free`.
+  // AI surfaces gate on canGenerate, not on `free` directly — the card cap
+  // and the account-bar badge stay keyed to `free`.
 
   // How many streamed segments existed before this render — only newer ones
   // get a stagger delay, so already-visible text never re-animates.

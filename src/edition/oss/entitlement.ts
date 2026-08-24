@@ -7,9 +7,12 @@ import { LOCAL_USER } from "./identity";
  *
  * There is no plan to be on and no quota to spend, because pylgrim is not
  * paying for any of it — generation runs against the operator's own
- * ANTHROPIC_API_KEY and is billed to them by Anthropic directly. That is
- * the same cost model the hosted BYO-key option uses, which is why the
- * hosted paywall waves BYO-key callers through too.
+ * ANTHROPIC_API_KEY and is billed to them by Anthropic directly.
+ *
+ * This is the ONLY place that arrangement exists. The hosted product does
+ * not let users supply a key (decision: no-byo-key-on-the-hosted-product);
+ * paying your own provider is what self-hosting IS, not an option bolted
+ * onto the subscription.
  *
  * The honest limit here is the operator's provider account, and it
  * enforces itself.
@@ -22,17 +25,16 @@ export async function requestContext(): Promise<RequestContext> {
     userId: LOCAL_USER.id,
     provider: await getProvider(),
     quota: UNMETERED,
-    byoKey: true,
   };
 }
 
 /**
  * No plan, no gate. Returning null means "proceed".
  *
- * The parameters exist because the hosted seam takes them and callers are
- * shared code; nothing here reads them.
+ * The parameter exists because the hosted seam takes it and callers are
+ * shared code; nothing here reads it.
  */
-export async function requirePaid(_userId?: string, _byoKey?: boolean): Promise<Response | null> {
+export async function requirePaid(_userId?: string): Promise<Response | null> {
   return null;
 }
 
@@ -42,10 +44,6 @@ export function quotaResponse(_quota: QuotaDecision): Response {
     status: 429,
     headers: { "Content-Type": "application/json" },
   });
-}
-
-export async function hasByoKey(_userId?: string): Promise<boolean> {
-  return true;
 }
 
 /**

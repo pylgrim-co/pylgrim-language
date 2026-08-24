@@ -32,7 +32,7 @@ export async function POST(req: Request): Promise<Response> {
   try {
     const ctx = await requestContext();
     if (!ctx.userId) return unauthorized();
-    const paywall = await requirePaid(ctx.userId, ctx.byoKey);
+    const paywall = await requirePaid(ctx.userId);
     if (paywall) return paywall;
     const provider = ctx.provider;
     const model = generateModelFor(body.data.targetLang);

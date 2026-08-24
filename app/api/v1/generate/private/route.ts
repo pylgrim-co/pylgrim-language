@@ -31,7 +31,7 @@ export async function POST(req: Request): Promise<Response> {
   const params = body.data;
   const ctx = await requestContext();
   if (!ctx.userId) return unauthorized();
-  const paywall = await requirePaid(ctx.userId, ctx.byoKey);
+  const paywall = await requirePaid(ctx.userId);
   if (paywall) return paywall;
   if (!ctx.quota.allowed) return quotaResponse(ctx.quota);
 

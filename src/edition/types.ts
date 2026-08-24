@@ -37,8 +37,6 @@ export interface RequestContext {
   userId: string | null;
   provider: import("../lib/provider").Provider;
   quota: QuotaDecision;
-  /** the caller supplies their own model key, so inference is not ours to meter */
-  byoKey: boolean;
 }
 
 export interface GenerationEvent {
