@@ -41,18 +41,28 @@ These are project constraints, not style preferences. Each one is load-bearing:
 - **The API key is server-side only.** It must never reach the client, in
   any build.
 
+## What this repository is
+
+A snapshot at roughly MVP parity with the hosted product — a complete
+application, not a continuously maintained mirror. Updates land sometimes;
+keeping pace with the hosted app is explicitly not a goal.
+
+Worth knowing before you invest in a large PR: it probably will not be
+merged and maintained. That is not a judgement on the patch. Forking and
+diverging is the expected outcome here, and the build does nothing to
+discourage it.
+
+Small fixes, bug reports and documentation corrections are a different
+matter and are genuinely welcome.
+
 ## Adding a language
 
-The honest answer: this build's language set is frozen at Spanish, French
-and German, and new languages ship in the hosted service instead. That is
-a product decision, not a technical limit — see the README.
+Documented properly in [ADDING-A-LANGUAGE.md](ADDING-A-LANGUAGE.md): four
+files, no architecture, and the compiler lists what is missing as you go.
 
-If you want a language for your own use, `src/lib/languages.ts` plus a
-per-language block in each of `src/prompts/{generate,generate-v2,translate}.ts`
-is the whole surface. The prompt tables are typed `Record<TargetLang, …>`,
-so the build tells you exactly what's missing. Note that non-Latin scripts
-need a segmentation stage before the weave works at all — the alignment
-model assumes whitespace-delimited words.
+The shipped set is fixed at Spanish, French and German and new languages go
+into the hosted service, so this is written for you to fork and keep rather
+than to send back. Everything you need is here and the tests come with it.
 
 ## Reporting bugs
 

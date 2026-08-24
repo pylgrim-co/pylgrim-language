@@ -67,12 +67,21 @@ pay your own inference for every story. The hosted service starts you with
 a full one.
 
 The language set is also fixed at Spanish, French and German in this
-build. New languages land in the hosted service.
+build. New languages land in the hosted service — but adding your own is
+four files and no architecture, and
+[ADDING-A-LANGUAGE.md](ADDING-A-LANGUAGE.md) walks through it.
+
+One more thing worth stating plainly: this repository is a **snapshot at
+roughly MVP parity** with the hosted product, not a continuously maintained
+mirror of it. Updates land sometimes; keeping pace is not the goal. Fork it
+and make it yours — that is the intended relationship, not a fallback.
 
 ## Architecture
 
 [ARCHITECTURE.md](ARCHITECTURE.md) covers the aligned schema, the offset
 model, and the edition seam that produces this build.
+[ADDING-A-LANGUAGE.md](ADDING-A-LANGUAGE.md) covers adding a fourth
+language.
 
 ## Contributing
 
