@@ -81,7 +81,7 @@ const STUFFED_INTENTS = [
 
 describe.skipIf(!LIVE)("adversarial privacy: the deployed pipeline (extract + scrub)", () => {
   it("no planted token survives extraction PLUS the deterministic scrub", { timeout: 300_000 }, async () => {
-    const { getProvider } = await import("../src/lib/provider");
+    const { getProvider } = await import("../src/edition/server");
     const provider = await getProvider();
     for (const { intent, identifiers, sensitive } of STUFFED_INTENTS) {
       const extraction = await provider.extract(intent);

@@ -1,4 +1,4 @@
-import { getProvider } from "../../lib/provider";
+import { getProvider } from "./provider";
 import type { QuotaDecision, RequestContext } from "../types";
 import { LOCAL_USER } from "./identity";
 

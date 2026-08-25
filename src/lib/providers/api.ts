@@ -3,7 +3,7 @@ import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { extractionSchema, type Extraction } from "../schema";
 import { EXTRACT_SYSTEM, extractUserPrompt } from "../../prompts/extract";
 import { generateSystem, generateUserPrompt, GENERATED_STORY_WITH_META_JSON_SCHEMA } from "../../prompts/generate";
-import { EXTRACT_MODEL, generateModelFor, type CompleteJsonParams, type GenerateParams, type GenEvent, type Provider } from "../provider";
+import { EXTRACT_MODEL, anthropicModelFor, type CompleteJsonParams, type GenerateParams, type GenEvent, type Provider } from "../provider";
 
 /**
  * Anthropic API provider. The key comes from ANTHROPIC_API_KEY and
@@ -15,7 +15,11 @@ import { EXTRACT_MODEL, generateModelFor, type CompleteJsonParams, type Generate
 export const apiProvider: Provider = (() => {
   const client = () => new Anthropic();
   return {
-  name: "api",
+  name: "anthropic",
+
+  modelFor(kind: "extract" | "generate", targetLang?: string): string {
+    return kind === "extract" ? EXTRACT_MODEL : anthropicModelFor(targetLang ?? "es");
+  },
 
   async extract(intent: string): Promise<Extraction> {
     const response = await client().messages.parse({
@@ -47,7 +51,7 @@ export const apiProvider: Provider = (() => {
 
   async *generate(params: GenerateParams): AsyncGenerator<GenEvent> {
     const stream = client().messages.stream({
-      model: params.model ?? generateModelFor(params.targetLang),
+      model: params.model ?? anthropicModelFor(params.targetLang),
       max_tokens: 8000,
       system: generateSystem(params),
       messages: [{ role: "user", content: generateUserPrompt(params.objectives, params.personalContext) }],

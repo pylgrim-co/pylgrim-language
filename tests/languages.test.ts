@@ -5,7 +5,7 @@ import { sampleStoryDe } from "../src/data/sample-story-de";
 import { storySchema, generationInputSchema } from "../src/lib/schema";
 import { sliceSpan } from "../src/lib/offsets";
 import { weave, type Difficulty } from "../src/lib/weave";
-import { generateModelFor } from "../src/lib/provider";
+import { anthropicModelFor } from "../src/lib/provider";
 import { generateSystem } from "../src/prompts/generate";
 import { generateV2System } from "../src/prompts/generate-v2";
 import { translateSystem } from "../src/prompts/translate";
@@ -86,9 +86,9 @@ describe("nothing hardcoded to Spanish", () => {
   });
 
   it("German generates on Fable 5; Spanish and French on Sonnet 5 (charter)", () => {
-    expect(generateModelFor("de")).toBe("claude-fable-5");
-    expect(generateModelFor("es")).toBe("claude-sonnet-5");
-    expect(generateModelFor("fr")).toBe("claude-sonnet-5");
+    expect(anthropicModelFor("de")).toBe("claude-fable-5");
+    expect(anthropicModelFor("es")).toBe("claude-sonnet-5");
+    expect(anthropicModelFor("fr")).toBe("claude-sonnet-5");
   });
 
   it("each language gets its own prompt block, register system and alignment notes", () => {

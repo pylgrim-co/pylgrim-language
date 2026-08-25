@@ -20,3 +20,25 @@ Rules:
 export function extractUserPrompt(intent: string): string {
   return `Learner's intent:\n\n${intent}`;
 }
+
+/**
+ * JSON Schema for providers that take one directly. The Anthropic path
+ * derives its own from `extractionSchema` via zod; this is the same shape
+ * spelled out for OpenAI-compatible endpoints, which want raw JSON Schema.
+ *
+ * Kept beside the prompt it belongs to, like the generation schema. Both
+ * are steering: `extractionSchema` is what actually validates the result.
+ */
+export const EXTRACTION_JSON_SCHEMA = {
+  type: "object",
+  properties: {
+    objectives: {
+      type: "array",
+      items: { type: "string" },
+      minItems: 1,
+      maxItems: 8,
+    },
+  },
+  required: ["objectives"],
+  additionalProperties: false,
+} as const;

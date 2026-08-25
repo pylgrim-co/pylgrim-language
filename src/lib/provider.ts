@@ -2,35 +2,27 @@ import type { Extraction } from "./schema";
 import { languageOf } from "./languages";
 
 /**
- * Generation provider abstraction.
+ * Generation provider abstraction — the CONTRACT only.
  *
- * Two providers, one surface:
- *  - "api"          — Anthropic API SDK, needs ANTHROPIC_API_KEY. The
- *                     production path hosted, and the operator's own key
- *                     self-hosted. One key per deployment, never per user.
- *  - "claude-code"  — Claude Agent SDK, authenticates with the local
- *                     Claude Code subscription login. LOCAL DEVELOPMENT
- *                     ONLY: a subscription is personal auth, not a
- *                     service credential, and the hosted product must
- *                     never sit on one.
+ * Which providers exist, and how one is chosen, is an edition question:
+ * the hosted product runs on exactly one key and one vendor, while a
+ * self-hoster may point the app at whatever they already pay for. So
+ * selection lives in src/edition/{cloud,oss}/provider.ts and the concrete
+ * implementations live beside whichever edition may use them.
  *
- * Selection: PYLGRIM_PROVIDER=api|claude-code wins; otherwise "api" when
- * ANTHROPIC_API_KEY is set, else "claude-code".
+ * Everything here is shared: the interface, the event shape, and the
+ * Anthropic model policy that the charter fixes per language.
  */
 
-export type ProviderName = "api" | "claude-code";
+export type ProviderName = "anthropic" | "openai" | "openrouter" | "claude-code";
 
 export const EXTRACT_MODEL = "claude-haiku-4-5";
 
-/** Generation model follows the language: German runs on Fable 5 (charter). */
-export function generateModelFor(targetLang: string): string {
+/** Generation model follows the language: German runs on Fable 5 (charter).
+ *  Anthropic-specific by definition — other vendors have no equivalent, so
+ *  their providers answer modelFor() from their own configuration. */
+export function anthropicModelFor(targetLang: string): string {
   return languageOf(targetLang).model;
-}
-
-export function resolveProvider(env: Record<string, string | undefined> = process.env): ProviderName {
-  const forced = env.PYLGRIM_PROVIDER;
-  if (forced === "api" || forced === "claude-code") return forced;
-  return env.ANTHROPIC_API_KEY ? "api" : "claude-code";
 }
 
 export interface GenerateParams {
@@ -65,19 +57,17 @@ export interface CompleteJsonParams {
 
 export interface Provider {
   name: ProviderName;
+  /**
+   * The model this provider will actually use for a job.
+   *
+   * Callers need this for cost attribution, and they must not guess it:
+   * the model is the provider's business, and a route that computed an
+   * Anthropic id while an OpenAI provider ran would record a plausible
+   * lie in generation_events.
+   */
+  modelFor(kind: "extract" | "generate", targetLang?: string): string;
   extract(intent: string): Promise<Extraction>;
   generate(params: GenerateParams): AsyncGenerator<GenEvent>;
   /** One-shot JSON completion — translate, sanitise, and other small jobs. */
   completeJson(params: CompleteJsonParams): Promise<{ json: unknown; usage: { input_tokens: number; output_tokens: number } }>;
-}
-
-export async function getProvider(name: ProviderName = resolveProvider()): Promise<Provider> {
-  // Dynamic imports keep the Agent SDK (which spawns a CLI) out of the
-  // bundle entirely when the API path is in use, and vice versa.
-  if (name === "claude-code") {
-    const { claudeCodeProvider } = await import("./providers/claude-code");
-    return claudeCodeProvider;
-  }
-  const { apiProvider } = await import("./providers/api");
-  return apiProvider;
 }

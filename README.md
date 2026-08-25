@@ -24,7 +24,7 @@ Spanish and pretending otherwise produces language nobody actually speaks.
 ## What you get
 
 - **Generated stories** from a typed intent, streamed, against your own
-  Anthropic key
+  key — Anthropic, OpenAI, or anything OpenRouter fronts
 - **The weave** — character-offset span alignment, so any selection flips,
   including selections spanning several aligned pairs
 - **Dialogue tiers** — one English narrative with five dialogue tracks at
@@ -41,7 +41,7 @@ Spanish and pretending otherwise produces language nobody actually speaks.
 
 ```bash
 npm install
-cp .env.example .env.local     # add your ANTHROPIC_API_KEY
+cp .env.example .env.local     # add a key: Anthropic, OpenAI or OpenRouter
 npm run dev
 ```
 

@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { generateModelFor } from "../../../../../src/lib/provider";
 
 import { regionSchema, registerSchema, targetLangSchema } from "../../../../../src/lib/languages";
 import { quotaResponse, recordGenerationEvent, requestContext, requirePaid, unauthorized } from "../../../../../src/edition/server";
@@ -59,7 +58,7 @@ export async function POST(req: Request): Promise<Response> {
           userId: ctx.userId,
           kind: "generate",
           provider: provider.name,
-          model: generateModelFor(params.targetLang),
+          model: ctx.provider.modelFor("generate", params.targetLang),
           targetLang: params.targetLang,
           inputTokens: usage?.input_tokens,
           outputTokens: usage?.output_tokens,

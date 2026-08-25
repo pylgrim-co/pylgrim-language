@@ -13,7 +13,8 @@
  */
 
 import { generatedStorySchema } from "../lib/schema";
-import { getProvider, resolveProvider } from "../lib/provider";
+import { getProvider, resolveProvider } from "../edition/server";
+
 import { toStoredStory } from "../lib/offsets";
 
 const INTENTS = [

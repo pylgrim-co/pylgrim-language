@@ -82,14 +82,32 @@ leaks past the seam fails the build rather than shipping quietly.
 
 ## Generation
 
-`src/lib/provider.ts` abstracts two providers behind one interface: the
-Anthropic API (what you use) and the Claude Agent SDK (local development
-against a Claude Code subscription).
+`src/lib/provider.ts` holds the provider *contract*; which providers exist
+and how one is chosen lives in `src/edition/oss/provider.ts`, because that
+is an edition question. Self-hosted you get Anthropic, OpenAI, OpenRouter
+and a local Claude Code development path; the hosted service runs on one
+vendor and offers no choice.
+
+`src/edition/oss/providers/openai-compatible.ts` serves both OpenAI and
+OpenRouter — OpenRouter speaks the same wire format, so a second
+implementation would be the same file with a different base URL. It talks
+to `fetch` rather than a vendor SDK to keep the install light.
+
+A provider answers `modelFor()` for its own jobs. Callers never compute a
+model name: a route that assumed an Anthropic id while an OpenAI provider
+ran would record a plausible lie in the usage log.
 
 Generation is two stages. **Extract** turns a typed intent into a list of
 learning objectives, in English, on Haiku. **Generate** writes the story
 from those objectives plus your own specifics, streaming NDJSON so the
 first readable content arrives in seconds rather than at the end.
+
+Generated alignment is checked, not trusted. `alignmentReport()` in
+`src/lib/offsets.ts` counts how many of the model's proposed phrase pairs
+actually survived ingest; below `ALIGNMENT_FLOOR` the app regenerates once
+and then warns. Dropping a bad pair costs a flip and never correctness,
+which is exactly what makes it the failure worth measuring — a weak model
+otherwise produces stories that read fine and barely flip.
 
 Prompts live in `src/prompts/` and are versioned in the repo — they are
 the most-iterated artifact in the product. Their per-language tables are

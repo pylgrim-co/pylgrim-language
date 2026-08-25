@@ -119,3 +119,56 @@ export function toStoredStory(
 
   return { core, rendering, createdAt: meta.createdAt, intent: meta.intent };
 }
+
+/**
+ * How much of a generated story's alignment actually survived ingest.
+ *
+ * Dropping a bad pair loses a flip affordance, never correctness — which
+ * makes it exactly the kind of failure that hides. A model that cannot
+ * hold the schema produces a document that parses, renders, reads fine,
+ * and barely flips, with nothing anywhere saying so. That is worse than a
+ * failed generation, because the weave IS the product.
+ *
+ * So: count what the model proposed against what was usable, and let the
+ * caller decide. Anthropic sits close to 1; a model that cannot do
+ * word-index alignment falls off a cliff, and the gap is obvious.
+ */
+export interface AlignmentReport {
+  proposed: number;
+  kept: number;
+  /** kept / proposed, or 1 when a story legitimately proposed nothing */
+  rate: number;
+}
+
+export function alignmentReport(gen: GeneratedStory): AlignmentReport {
+  let proposed = 0;
+  let kept = 0;
+  for (const s of gen.segments) {
+    proposed += s.pairs.length;
+    const raw: SpanPair[] = [];
+    s.pairs.forEach((p, j) => {
+      const l1 = wordSpanToCharSpan(s.l1_text, p.l1_words);
+      const target = wordSpanToCharSpan(s.target_text, p.target_words);
+      if (!l1 || !target) return;
+      raw.push({
+        id: `probe-${j}`,
+        l1,
+        target,
+        granularity: p.granularity,
+        payload: p.payload,
+        frequencyRank: p.frequency_rank,
+        plotCritical: p.plot_critical,
+      });
+    });
+    kept += sanitizePairs(raw).length;
+  }
+  return { proposed, kept, rate: proposed === 0 ? 1 : kept / proposed };
+}
+
+/**
+ * Below this, the story is not really woven. Set from observation rather
+ * than taste: a capable model lands well above 0.9, and the occasional
+ * off-by-one costs a point or two. Half the pairs failing is a different
+ * kind of event.
+ */
+export const ALIGNMENT_FLOOR = 0.6;

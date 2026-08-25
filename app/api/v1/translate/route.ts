@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { generatedStorySchema } from "../../../../src/lib/schema";
-import { generateModelFor } from "../../../../src/lib/provider";
 import { translateSystem, translateUserPrompt } from "../../../../src/prompts/translate";
 import { GENERATED_STORY_JSON_SCHEMA } from "../../../../src/prompts/generate";
 
@@ -35,7 +34,7 @@ export async function POST(req: Request): Promise<Response> {
     const paywall = await requirePaid(ctx.userId);
     if (paywall) return paywall;
     const provider = ctx.provider;
-    const model = generateModelFor(body.data.targetLang);
+    const model = ctx.provider.modelFor("generate", body.data.targetLang);
     const started = Date.now();
     const { json, usage } = await provider.completeJson({
       system: translateSystem(body.data),

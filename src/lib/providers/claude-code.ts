@@ -3,7 +3,7 @@ import { z } from "zod";
 import { extractionSchema, type Extraction } from "../schema";
 import { EXTRACT_SYSTEM, extractUserPrompt } from "../../prompts/extract";
 import { generateSystem, generateUserPrompt, GENERATED_STORY_WITH_META_JSON_SCHEMA } from "../../prompts/generate";
-import { EXTRACT_MODEL, generateModelFor, type CompleteJsonParams, type GenerateParams, type GenEvent, type Provider } from "../provider";
+import { EXTRACT_MODEL, anthropicModelFor, type CompleteJsonParams, type GenerateParams, type GenEvent, type Provider } from "../provider";
 
 /**
  * Claude Code subscription provider — LOCAL DEVELOPMENT ONLY.
@@ -30,6 +30,10 @@ const COMMON_OPTIONS = {
 
 export const claudeCodeProvider: Provider = {
   name: "claude-code",
+
+  modelFor(kind: "extract" | "generate", targetLang?: string): string {
+    return kind === "extract" ? EXTRACT_MODEL : anthropicModelFor(targetLang ?? "es");
+  },
 
   async extract(intent: string): Promise<Extraction> {
     let structured: unknown;
@@ -82,7 +86,7 @@ export const claudeCodeProvider: Provider = {
       prompt: generateUserPrompt(params.objectives, params.personalContext),
       options: {
         ...COMMON_OPTIONS,
-        model: params.model ?? generateModelFor(params.targetLang),
+        model: params.model ?? anthropicModelFor(params.targetLang),
         systemPrompt: generateSystem(params),
         includePartialMessages: true,
         outputFormat: { type: "json_schema", schema: GENERATED_STORY_WITH_META_JSON_SCHEMA },

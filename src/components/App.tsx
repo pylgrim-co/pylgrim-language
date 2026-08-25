@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { m } from "motion/react";
 import type { Card, GeneratedSegment, Story } from "../lib/schema";
 import { generatedStorySchema } from "../lib/schema";
-import { toStoredStory } from "../lib/offsets";
+import { ALIGNMENT_FLOOR, alignmentReport, toStoredStory } from "../lib/offsets";
 import { extractArrayObjects } from "../lib/partial-json";
 import { db } from "../lib/db";
 import { saveStory, deleteCard as deleteCardMutation } from "../lib/mutations";
@@ -77,6 +77,8 @@ export default function App({
   const [openAt, setOpenAt] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Not a failure: the story saved, but it is worth less than it looks.
+  const [warning, setWarning] = useState<string | null>(null);
   const [progress, setProgress] = useState<GeneratedSegment[]>([]);
   const [story, setStory] = useState<Story | null>(null);
   const [stories, setStories] = useState<Story[]>([]);
@@ -173,6 +175,8 @@ export default function App({
     objectives?: string[];
     format?: "dialogue-tiers" | "weave";
     purpose?: "standard" | "checkpoint";
+    /** set on the one automatic re-run after weak alignment; stops it looping */
+    alignmentRetry?: boolean;
   }) {
     const useObjectives = overrides?.objectives ?? objectives;
     const useFormat = overrides?.format ?? storyFormat;
@@ -181,6 +185,7 @@ export default function App({
     if (overrides?.objectives) setObjectives(overrides.objectives);
     setBusy(true);
     setError(null);
+    setWarning(null);
     setProgress([]);
     setPhase("generating");
     try {
@@ -281,6 +286,20 @@ export default function App({
         return;
       }
       const gen = generatedStorySchema.parse(fullDoc ?? JSON.parse(jsonBuffer));
+
+      // A story whose alignment mostly failed still parses and still reads —
+      // it just barely flips, which is the failure mode that hides. Pool
+      // stories are already vetted, so only a fresh generation is retried.
+      const alignment = alignmentReport(gen);
+      if (!poolHit && alignment.rate < ALIGNMENT_FLOOR) {
+        if (!overrides?.alignmentRetry) {
+          return await handleGenerate({ ...overrides, objectives: useObjectives, format: useFormat, alignmentRetry: true });
+        }
+        setWarning(
+          `This story's phrase alignment came back weak (${alignment.kept} of ${alignment.proposed} usable), so fewer phrases will flip than usual. That usually means the model is struggling with the format — a more capable one will do better.`,
+        );
+      }
+
       const stored = toStoredStory(gen, {
         id: crypto.randomUUID(),
         targetLang,
@@ -484,6 +503,7 @@ export default function App({
 
       <div className="content">
       {error && <p className="error">{error}</p>}
+      {warning && <p className="hint">{warning}</p>}
 
       {tab === "new" && phase === "intent" && !canGenerate && (
         <UpgradePanel
