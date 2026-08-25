@@ -40,10 +40,15 @@ Spanish and pretending otherwise produces language nobody actually speaks.
 ## Running it
 
 ```bash
-npm install
+npm install                    # or pnpm, yarn, bun — your call
 cp .env.example .env.local     # add a key: Anthropic, OpenAI or OpenRouter
 npm run dev
 ```
+
+No lockfile ships and nothing here assumes a package manager: examples
+use npm, and CI proves npm, pnpm, yarn and bun all install, test and
+build. Commit your own lockfile after the first install if you want
+reproducible installs in your fork.
 
 That's it. No database, no accounts, no sign-in — see
 [SELF-HOSTING.md](SELF-HOSTING.md) for what that means and what it costs

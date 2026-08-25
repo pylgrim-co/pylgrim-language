@@ -36,3 +36,6 @@ npm run dev
 npm run typecheck
 npm test
 ```
+
+npm is the example, not a requirement — pnpm, yarn and bun work the
+same, and no lockfile is shipped.

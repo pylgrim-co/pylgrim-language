@@ -5,16 +5,41 @@ on:
     branches: [main]
   pull_request:
 
+# The repository ships no lockfile and promises that any package manager
+# works, so the promise is tested rather than asserted: every job installs
+# fresh with a different manager and runs the same scripts.
 jobs:
   build:
+    name: ${{ matrix.pm }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - pm: npm
+            install: npm install
+            run: npm run
+          - pm: pnpm
+            install: pnpm install
+            run: pnpm run
+          - pm: yarn
+            install: yarn install
+            run: yarn run
+          - pm: bun
+            install: bun install
+            run: bun run
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
-      - run: npm ci
-      - run: npm run typecheck
-      - run: npm test
-      - run: npm run build
+      - uses: pnpm/action-setup@v4
+        if: matrix.pm == 'pnpm'
+        with:
+          version: 10
+      - uses: oven-sh/setup-bun@v2
+        if: matrix.pm == 'bun'
+      - run: ${{ matrix.install }}
+      - run: ${{ matrix.run }} typecheck
+      - run: ${{ matrix.run }} test
+      - run: ${{ matrix.run }} build

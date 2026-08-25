@@ -5,6 +5,11 @@
 Node 20+ and an API key from Anthropic, OpenAI, or OpenRouter. Optionally
 an Azure Speech key for audio. There is no database.
 
+Any package manager works — npm, pnpm, yarn or bun. The docs use npm in
+examples; substitute freely. No lockfile ships, so your first install
+resolves fresh; commit the lockfile your manager writes if you want your
+fork pinned.
+
 ```bash
 npm install
 cp .env.example .env.local
@@ -34,33 +39,37 @@ Model names change often enough that a baked-in default would eventually
 404 on a fresh install, and that failure looks like a bug in pylgrim
 rather than a stale constant. Pick one and name it.
 
-### What the model actually has to do
+### Picking a model
 
-This is not a chat app, and the requirement is unusually specific. A
-generated story is one aligned bilingual structure: for every phrase pair,
-the model emits **word-index spans** into both the English and the target
-text — `[3, 5]` against `[1, 3]` — which are converted to character
-offsets and stored. Getting them right is what makes a phrase flip.
+This is not a chat app, and the job is unusually specific. Every phrase
+pair in a story is a **word-index span** into both languages — `[3, 5]`
+against `[1, 3]` — which is what makes a phrase flip when you tap it. So
+the model has to do two things beyond writing decent Spanish:
 
-So the model needs two things beyond writing decent Spanish:
+- hold a deep nested JSON schema, strictly
+- count word positions accurately, over and over, across 500 words
 
-- **Strict JSON schema adherence**, for a fairly deep nested structure.
-- **Accurate counting**, repeatedly, across a 500-word story.
+The counting is what separates models, and it fails quietly. Pairs that
+don't line up are dropped at ingest, so the story still saves, still
+reads, and simply flips less.
 
-The second is where weaker models fall down, and it fails quietly. Pairs
-whose spans do not line up are dropped at ingest — the story still saves,
-still reads, and simply flips less. Anthropic models sit near-perfect.
-Smaller and older models can land well under half.
+**What to use:**
 
-pylgrim measures this rather than leaving you to notice. If too much of a
-story's alignment fails, it regenerates once, and if the second attempt is
-no better it saves the story with a visible warning telling you the model
-is struggling. **If you see that warning repeatedly, change model** — the
-app is working; the model is not up to the job.
+- **Anthropic** is the safe answer. It needs no model configuration, picks
+  the right one per language, and is what the prompts were tuned against.
+- **OpenAI or OpenRouter**: use a current frontier model and check it
+  supports strict JSON schema output. Cheap, small and older models are
+  where alignment falls apart.
+- On **OpenRouter**, the model you name matters far more than OpenRouter
+  does — it's a router, so quality is entirely whatever you routed to.
 
-Anthropic is preferred when several keys are set, for that reason and no
-other: the prompts and the per-language model policy were tuned against
-it, and it is what the alignment floor was calibrated on.
+You don't have to guess whether it's working. If too much of a story's
+alignment fails, pylgrim regenerates once, and if the second attempt is no
+better it saves the story and tells you the model is struggling. **Seeing
+that warning more than occasionally means switch model**, not that
+something is broken.
+
+The header shows which provider and model you're on.
 
 ## Where your data lives
 

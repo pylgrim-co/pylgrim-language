@@ -11,5 +11,5 @@ export { currentSessionUser, currentUserId, requireUserId, unauthorized, LOCAL_U
 export { planFor, recordPlanChoice, requirePaid, requestContext, quotaResponse } from "./entitlement";
 export { recordGenerationEvent, costUsd } from "./usage";
 export { audioExists, audioUrl, uploadAudio, audioFilePath } from "./audio-store";
-export { getProvider, resolveProvider } from "./provider";
+export { getProvider, resolveProvider, providerStatus } from "./provider";
 export { FLAGS } from "./flags";

@@ -48,11 +48,14 @@ export default function App({
   initialUser,
   plan,
   canGenerate,
+  provider,
 }: {
   initialUser: SessionUser;
   plan: Plan;
   /** whether the AI surfaces are available to this caller */
   canGenerate: boolean;
+  /** self-hosted only: which provider the environment resolved to */
+  provider?: { label: string; detail: string; ready: boolean };
 }) {
   const [tab, setTab] = useState<Tab>("new");
   const [phase, setPhase] = useState<Phase>("intent");
@@ -471,6 +474,16 @@ export default function App({
           <div className="account-bar">
             {/* Self-hosted runs as one person on their own machine: no
                 email to show, no plan to be on, nothing to sign out of. */}
+            {provider && (
+              <span
+                className={provider.ready ? "account-email" : "error"}
+                title={
+                  "Set in .env.local. Stories are aligned phrase by phrase, which needs the model to count word positions accurately across the whole story. Capable models manage it; small or older ones drop most pairs and the story stops flipping. You'll see a warning if that happens — switch model. See SELF-HOSTING.md."
+                }
+              >
+                {provider.label} · {provider.detail}
+              </span>
+            )}
             {FLAGS.HAS_ACCOUNTS && (
               <>
                 <span className="account-email">{user.email}</span>

@@ -21,6 +21,9 @@ npm run typecheck
 npm test
 ```
 
+Any package manager is fine — these are plain package.json scripts, and
+CI runs them under npm, pnpm, yarn and bun alike.
+
 ## Things that will get a PR sent back
 
 These are project constraints, not style preferences. Each one is load-bearing:
